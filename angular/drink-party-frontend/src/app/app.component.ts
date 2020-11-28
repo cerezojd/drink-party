@@ -7,7 +7,7 @@ import { GameSignalRService } from './services/game-signalr.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'drink-party';
+  title = 'drink-party-frontend';
 
   constructor(private gameService: GameSignalRService) {
     this.gameService.startConnection();
