@@ -1,0 +1,7 @@
+{
+  "/portalhubfrontend": {
+    "target": "http://localhost:56521/",
+    "ws": true,
+    "secure": false
+  }
+}

@@ -1,0 +1,12 @@
+.main-container {
+  background-color: #eeeeee;
+  background-position: center;
+
+  height: 100vh;
+  left: 50%;
+  right: 50%;
+
+  & .container {
+    max-width: 30rem;
+  }
+}

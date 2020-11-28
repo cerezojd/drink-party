@@ -1,0 +1,28 @@
+<div class="d-flex align-items-center main-container">
+  <div class="container">
+    <div class="card border">
+      <div class="p-3">
+        <div class="text-center">
+          <h1 class="mb-0">BEBERE</h1>
+          <hr>
+        </div>
+        <div class="text-center pt-3">
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-info" [ngClass]="{'active': currentMode === screenModes.Create}" (click)="onChangeMode(screenModes.Create)">
+              <input type="radio" name="options" id="create" class="active">Create
+            </label>
+            <label class="btn btn-info" [ngClass]="{'active': currentMode === screenModes.Join}" (click)="onChangeMode(screenModes.Join)">
+              <input type="radio" name="options" id="join">Join
+            </label>
+          </div>
+        </div>
+        <div class="p-3 mt-1">
+          <ng-container [ngSwitch]="currentMode">
+          <app-join-form *ngSwitchCase="screenModes.Join" ></app-join-form>
+          <app-create-form *ngSwitchCase="screenModes.Create" (formResult)="onCreate($event)"></app-create-form>
+        </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
