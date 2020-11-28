@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { JoinFormResult } from 'src/app/models/join-form-result';
+import { JoinFormResult, MainFormState } from 'src/app/models/main';
 import { ScreenMode } from 'src/app/models/screen-mode';
 import { GameSignalRService } from 'src/app/services/game-signalr.service';
 import { GameStateService } from 'src/app/services/game-state.service';
@@ -13,6 +13,7 @@ import { GameStateService } from 'src/app/services/game-state.service';
 export class MainComponent implements OnInit {
   screenModes = ScreenMode;
   currentMode = ScreenMode.Create;
+  formState: MainFormState;
 
   constructor(
     private gameService: GameSignalRService,
@@ -51,4 +52,8 @@ export class MainComponent implements OnInit {
   }
 
   onJoin(formResult: JoinFormResult) {}
+
+  onStateChange(formState: MainFormState) {
+    this.formState = { ...this.formState, ...formState };
+  }
 }

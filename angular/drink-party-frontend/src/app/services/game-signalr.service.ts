@@ -35,7 +35,7 @@ export class GameSignalRService {
   }
 
   getGameInfo(): Observable<GameInfo> {
-    return this.on<GameInfo>('gameInfo');
+    return this.on('gameInfo');
   }
 
   private on<T>(methodName: string): Observable<T> {
