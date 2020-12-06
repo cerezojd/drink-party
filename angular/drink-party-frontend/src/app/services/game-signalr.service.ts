@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import * as signalR from '@aspnet/signalr';
 import { Observable } from 'rxjs';
-import { GameInfo } from '../models/game';
-
-const BASE_URL = 'https://localhost:5001';
 
 @Injectable({ providedIn: 'root' })
 export class GameSignalRService {
   private hubConnection: signalR.HubConnection;
 
-  constructor(private router: Router) {
+  constructor() {}
+
+  configureHub(token: string) {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(BASE_URL + '/gamehub')
+      .withUrl('/gamehub', {
+        accessTokenFactory: () => token,
+      })
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
@@ -30,12 +30,16 @@ export class GameSignalRService {
       .catch((err) => console.log('Error while starting connection: ', err));
   }
 
-  createRoom(userName: string): Observable<void> {
-    return this.invoke('CreateRoom', userName);
+  createRoom(username: string): Observable<string> {
+    return this.invoke('CreateRoom', username);
   }
 
-  getGameInfo(): Observable<GameInfo> {
-    return this.on('gameInfo');
+  getGameInfo(): Observable<any> {
+    return this.on('GameInfo');
+  }
+
+  joinRoom(username: string, roomCode: string): Observable<void> {
+    return this.invoke('JoinRoom', username, roomCode);
   }
 
   private on<T>(methodName: string): Observable<T> {
@@ -44,12 +48,12 @@ export class GameSignalRService {
     });
   }
 
-  private invoke(methodName: string, ...args: any[]): Observable<void> {
-    return new Observable<void>((subscriber) => {
+  private invoke<T>(methodName: string, ...args: any[]): Observable<T> {
+    return new Observable<T>((subscriber) => {
       this.hubConnection
         .invoke(methodName, ...args)
-        .then((_) => {
-          subscriber.next();
+        .then((result: T) => {
+          subscriber.next(result);
         })
         .catch((err) => {
           subscriber.error(err);

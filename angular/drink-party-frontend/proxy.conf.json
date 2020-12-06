@@ -1,7 +1,7 @@
 {
-  "/portalhubfrontend": {
-    "target": "http://localhost:56521/",
-    "ws": true,
-    "secure": false
+  "/gamehub": {
+    "target": "https://localhost:5001",
+    "secure": false,
+    "ws": true
   }
 }

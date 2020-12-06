@@ -1,11 +1,16 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { MainComponent } from './views/main/main.component';
-import { RoomComponent } from './views/room/room.component';
+import { MainComponent } from './pages/main/main.component';
+import { RedirectComponent } from './pages/redirect.component';
+import { RoomComponent } from './pages/room/room.component';
 
 const routes: Routes = [
   {
     path: '',
+    component: RedirectComponent,
+  },
+  {
+    path: 'main',
     component: MainComponent,
   },
   {

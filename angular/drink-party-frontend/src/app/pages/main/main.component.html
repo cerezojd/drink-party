@@ -18,7 +18,7 @@
         </div>
         <div class="p-3 mt-1">
           <ng-container [ngSwitch]="currentMode">
-          <app-join-form *ngSwitchCase="screenModes.Join" [state]="formState" (stateChange)="onStateChange($event)"></app-join-form>
+          <app-join-form *ngSwitchCase="screenModes.Join" [state]="formState" (stateChange)="onStateChange($event)" (formResult)="onJoin($event)"></app-join-form>
           <app-create-form *ngSwitchCase="screenModes.Create"  [state]="formState" (stateChange)="onStateChange($event)" (formResult)="onCreate($event)"></app-create-form>
         </ng-container>
         </div>

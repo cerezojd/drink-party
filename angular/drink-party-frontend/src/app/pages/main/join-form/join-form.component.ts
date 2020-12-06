@@ -58,7 +58,7 @@ export class JoinFormComponent {
 
     this.formResult.emit({
       roomCode: this.formControls.roomCode.value,
-      username: this.formControls.username.value,
+      playerName: this.formControls.username.value,
     } as JoinFormResult);
   }
 

@@ -5,10 +5,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MainComponent } from './views/main/main.component';
-import { JoinFormComponent } from './views/main/join-form/join-form.component';
-import { CreateFormComponent } from './views/main/create-form/create-form.component';
-import { RoomComponent } from './views/room/room.component';
+import { CreateFormComponent } from './pages/main/create-form/create-form.component';
+import { JoinFormComponent } from './pages/main/join-form/join-form.component';
+import { MainComponent } from './pages/main/main.component';
+import { RoomComponent } from './pages/room/room.component';
 
 @NgModule({
   declarations: [
