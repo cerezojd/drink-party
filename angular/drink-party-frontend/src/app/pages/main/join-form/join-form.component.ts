@@ -35,7 +35,7 @@ import { JoinFormResult, MainFormState } from 'src/app/models/main';
 })
 export class JoinFormComponent {
   @Input() set state(state: MainFormState) {
-    this.fillForm(state.username, state.roomCode);
+    this.fillForm(state?.username, state?.roomCode);
   }
   @Output() stateChange = new EventEmitter<MainFormState>();
   @Output() formResult = new EventEmitter<JoinFormResult>();

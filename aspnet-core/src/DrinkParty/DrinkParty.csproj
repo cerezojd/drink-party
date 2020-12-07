@@ -14,11 +14,5 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="drink-party.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 
 </Project>

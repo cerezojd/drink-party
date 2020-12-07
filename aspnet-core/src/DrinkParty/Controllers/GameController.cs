@@ -1,7 +1,9 @@
 ﻿using DrinkParty.Controllers.dtos;
-using DrinkParty.Jwt;
+using DrinkParty.Features;
+using DrinkParty.Features.Rooms;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
 
 namespace DrinkParty.Controllers
 {
@@ -9,22 +11,24 @@ namespace DrinkParty.Controllers
     [Route("[controller]")]
     public class GameController: ControllerBase
     {
-        private readonly JwtTokenGenerator _jwtTokenGenerator;
+        private readonly GameService _gameService;
 
-        public GameController(JwtTokenGenerator jwtTokenGenerator)
+        public GameController(GameService gameService)
         {
-            _jwtTokenGenerator = jwtTokenGenerator;
+            _gameService = gameService;
         }
 
         [HttpPost("StartGame")]
-        public StartGameOutput StartGame([FromBody] StartGameInput input)
+        public async Task<StartGameOutput> StartGameAsync([FromBody] StartGameInput input)
         {
+            if (string.IsNullOrWhiteSpace(input.PlayerName))
+                throw new Exception("Invalid player name");
 
-            var roomCode = input.RoomCode ?? Guid.NewGuid().ToString();
-            if (!Guid.TryParse(roomCode, out var _))
-                throw new Exception("Invalid room code");
-
-            var token = _jwtTokenGenerator.GenerateJwtToken(input.PlayerName, roomCode);
+            string token;
+            if (input.RoomCode.HasValue)
+                token = await _gameService.JoinGameAsync(input.RoomCode.Value, input.PlayerName);
+            else
+                token = await _gameService.CreateGameAsync(input.PlayerName);
 
             return new StartGameOutput { Token = token };
         }

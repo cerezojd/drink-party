@@ -11,19 +11,19 @@ namespace DrinkParty.EntityFramework
             _context = context;
         }
 
-        public async Task Start()
+        public async Task StartAsync()
         {
             await _context.Database.BeginTransactionAsync();
         }
 
-        public void Commit()
+        public async Task CommitAsync()
         {
-            _context.Database.CommitTransaction();
+            await _context.Database.CommitTransactionAsync();
         }
 
-        public void Rollback()
+        public async Task RollbackAsync()
         {
-            _context.Database.RollbackTransaction();
+            await _context.Database.RollbackTransactionAsync();
         }
     }
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Player } from 'src/app/models/player';
+import { GameSignalRService } from 'src/app/services/game-signalr.service';
 import { GameService } from 'src/app/services/game.service';
 
 @Component({
@@ -10,9 +11,14 @@ import { GameService } from 'src/app/services/game.service';
 export class RoomComponent implements OnInit {
   player: Player;
 
-  constructor(private gameService: GameService) {}
+  constructor(
+    private gameService: GameService,
+    private gameSignalRService: GameSignalRService
+  ) {}
 
   ngOnInit(): void {
     this.player = this.gameService.player;
+    this.gameSignalRService.configureHub(this.gameService.getStoredToken());
+    this.gameSignalRService.startConnection();
   }
 }

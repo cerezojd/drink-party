@@ -21,7 +21,7 @@ namespace DrinkParty.Features.Players
         }
 
 
-        public async Task<Guid> CreateAsync(string name)
+        public async Task<Player> CreateAsync(string name)
         {
             var player = new Player
             {
@@ -33,7 +33,7 @@ namespace DrinkParty.Features.Players
             await _playerDbSet.AddAsync(player);
             await _context.SaveChangesAsync();
 
-            return player.Id;
+            return player;
         }
 
         public async Task<Player> GetByIdAsync(Guid playerId)
@@ -77,6 +77,21 @@ namespace DrinkParty.Features.Players
                 throw new Exception("Player does not exist");
 
             return player.Sessions;
+        }
+
+        public async Task<PlayerSession> GetSessionByConnectionIdAsync(string connectioId)
+        {
+            return await _playerSessionDbSet.Include(p => p.Player).ThenInclude(p => p.Room).FirstOrDefaultAsync(s => s.ConnectionId == connectioId);
+        }
+
+        public async Task RemoveAsync(Guid id)
+        {
+            var player = await GetByIdAsync(id);
+            if (player is null)
+                throw new Exception("Player does not exist");
+
+            _playerDbSet.Remove(player);
+            await _context.SaveChangesAsync();
         }
     }
 }

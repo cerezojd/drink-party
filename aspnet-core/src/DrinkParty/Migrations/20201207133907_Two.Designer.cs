@@ -3,14 +3,16 @@ using System;
 using DrinkParty.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DrinkParty.Migrations
 {
     [DbContext(typeof(DrinkDbContext))]
-    partial class DrinkDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201207133907_Two")]
+    partial class Two
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,7 +30,7 @@ namespace DrinkParty.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("RoomId")
+                    b.Property<Guid>("RoomId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -85,7 +87,9 @@ namespace DrinkParty.Migrations
                 {
                     b.HasOne("DrinkParty.Features.Rooms.Room", "Room")
                         .WithMany("Players")
-                        .HasForeignKey("RoomId");
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Room");
                 });

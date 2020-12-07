@@ -10,7 +10,7 @@ namespace DrinkParty.Features.Players
         public bool IsAdmin { get; set; }
         
         public Room Room { get; set; }
-        public Guid RoomId { get; set; }
+        public Guid? RoomId { get; set; }
 
         public ICollection<PlayerSession> Sessions { get; set; } = new List<PlayerSession>();
     }

@@ -1,4 +1,6 @@
-﻿using DrinkParty.Features.Players;
+﻿using DrinkParty.EntityFramework;
+using DrinkParty.Features;
+using DrinkParty.Features.Players;
 using DrinkParty.Features.Rooms;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,9 +12,8 @@ namespace DrinkParty
         {
             services.AddScoped<RoomService>();
             services.AddScoped<PlayerService>();
-            //services.AddScoped<PlayerSessionService>();
-            //services.AddScoped<IGameHubFrontend, GameHub>();
-            //services.AddTransient<TransactionService>();
+            services.AddScoped<GameService>();
+            services.AddTransient<TransactionService>();
         }
     }
 }

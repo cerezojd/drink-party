@@ -22,17 +22,17 @@ namespace DrinkParty.Jwt
             _settings = settings.Value;
         }
 
-        public string GenerateJwtToken(string userName, string roomCode)
+        public string GenerateJwtToken(string roomCode, string playerId, string playerName)
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, playerId),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat,
                     (DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds.ToString(CultureInfo.InvariantCulture)),
-                new Claim(JwtRegisteredClaimNames.GivenName, userName),
-                new Claim(JwtRegisteredClaimNames.UniqueName, userName),
-                new Claim(ClaimNames.PlayerNameClaimName, userName),
+                new Claim(JwtRegisteredClaimNames.GivenName, playerName),
+                new Claim(JwtRegisteredClaimNames.UniqueName, playerName),
+                new Claim(ClaimNames.PlayerNameClaimName, playerName),
                 new Claim(ClaimNames.RoomCodeClaimName, roomCode)
             };
 

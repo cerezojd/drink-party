@@ -18,7 +18,7 @@ namespace DrinkParty.Features.Rooms
             _dbSet = context.Rooms;
         }
 
-        public async Task<Guid> CreateAsync()
+        public async Task<Room> CreateAsync()
         {
             var room = new Room
             {
@@ -29,19 +29,19 @@ namespace DrinkParty.Features.Rooms
             await _dbSet.AddAsync(room);
             await _context.SaveChangesAsync();
 
-            return room.Id;
+            return room;
         }
 
-        public async Task<Guid> JoinAsyn(Guid roomCode, Player player)
+        public async Task<Room> JoinAsyn(Guid roomCode, Player player)
         {
-            var room = await _dbSet.Include(r => r.Players).FirstOrDefaultAsync(r => r.Code == roomCode);
+            var room = await GetRoomByCodeAsync(roomCode);
             if (room is null)
                 throw new Exception("Room does not exist");
 
             if (room.Players.Any(p => p.Id == player.Id))
                 throw new Exception("Player already joined");
 
-            if(room.Players.Count == room.MaxPlayer)
+            if (room.Players.Count == room.MaxPlayer)
                 throw new Exception("Room full");
 
             if (room.Players.Count == 0)
@@ -51,7 +51,28 @@ namespace DrinkParty.Features.Rooms
 
             await _context.SaveChangesAsync();
 
-            return room.Id;
+            return room;
+        }
+
+        public async Task AssingPlayerAdminAsync(Guid roomCode)
+        {
+            var room = await _dbSet.Include(r => r.Players).ThenInclude(p => p.Sessions).FirstOrDefaultAsync(r => r.Code == roomCode);
+
+            var lastAdmin = room.Players.FirstOrDefault(p => p.IsAdmin);
+            var newAdmin = room.Players.Where(p => p.Sessions.Any()).FirstOrDefault();
+
+            if (!(lastAdmin is null) && !(newAdmin is null))
+            {
+                lastAdmin.IsAdmin = false;
+                newAdmin.IsAdmin = true;
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<Room> GetRoomByCodeAsync(Guid roomCode)
+        {
+            return await _dbSet.Include(r => r.Players).FirstOrDefaultAsync(r => r.Code == roomCode);
         }
     }
 }
