@@ -43,7 +43,8 @@ namespace DrinkParty
             });
 
             services.ConfigureAppServices();
-           
+            services.AddHttpContextAccessor();
+
             services.AddSignalR();
             services.ConfigureJwt(Configuration);
 

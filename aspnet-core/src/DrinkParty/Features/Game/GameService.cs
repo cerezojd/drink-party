@@ -2,6 +2,7 @@
 using DrinkParty.Features.Players;
 using DrinkParty.Features.Rooms;
 using DrinkParty.Jwt;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,13 +15,15 @@ namespace DrinkParty.Features
         private readonly PlayerService _playerService;
         private readonly JwtTokenGenerator _jwtTokenGenerator;
         private readonly TransactionService _transactionService;
+        private readonly IHttpContextAccessor _accessor;
 
-        public GameService(RoomService roomService, PlayerService playerService, JwtTokenGenerator jwtTokenGenerator, TransactionService transactionService)
+        public GameService(RoomService roomService, PlayerService playerService, JwtTokenGenerator jwtTokenGenerator, TransactionService transactionService, IHttpContextAccessor accessor)
         {
             _roomService = roomService;
             _playerService = playerService;
             _jwtTokenGenerator = jwtTokenGenerator;
             _transactionService = transactionService;
+            _accessor = accessor;
         }
 
         public async Task<string> CreateGameAsync(string playerName)
@@ -28,11 +31,11 @@ namespace DrinkParty.Features
             var player = await _playerService.CreateAsync(playerName);
             var room = await _roomService.CreateAsync();
 
-            await _roomService.JoinAsyn(room.Code, player);
-            return _jwtTokenGenerator.GenerateJwtToken(room.Code.ToString(), player.Id.ToString(), player.Name);
+            await _roomService.JoinAsyn(room.Id, player);
+            return _jwtTokenGenerator.GenerateJwtToken(room.Id.ToString(), player.Id.ToString(), player.Name);
         }
 
-        public async Task<string> JoinGameAsync(Guid roomCode, string playerName)
+        public async Task<string> JoinGameAsync(Guid roomId, string playerName)
         {
             string token;
             try
@@ -40,8 +43,8 @@ namespace DrinkParty.Features
                 await _transactionService.StartAsync();
 
                 var player = await _playerService.CreateAsync(playerName);
-                var room = await _roomService.JoinAsyn(roomCode, player);
-                token = _jwtTokenGenerator.GenerateJwtToken(room.Code.ToString(), player.Id.ToString(), player.Name);
+                var room = await _roomService.JoinAsyn(roomId, player);
+                token = _jwtTokenGenerator.GenerateJwtToken(room.Id.ToString(), player.Id.ToString(), player.Name);
             }
             catch
             {
@@ -53,9 +56,9 @@ namespace DrinkParty.Features
             return token;
         }
 
-        public async Task CreatePlayerSessionAsync(Guid roomCode, Guid playerId, string connectionId)
+        public async Task CreatePlayerSessionAsync(Guid roomId, Guid playerId, string connectionId)
         {
-            var room = await _roomService.GetRoomByCodeAsync(roomCode);
+            var room = await _roomService.GetRoomByCodeAsync(roomId);
             if (room is null)
                 throw new Exception("Invalid room");
 
@@ -68,7 +71,7 @@ namespace DrinkParty.Features
             // Check is player admin with sessions
             var currentAdmin = room.Players.Where(p => p.IsAdmin).FirstOrDefault();
             if(!currentAdmin.Sessions.Any())
-                await _roomService.AssingPlayerAdminAsync(room.Code);
+                await _roomService.AssingPlayerAdminAsync(room.Id);
         }
 
         public async Task RemovePlayerSessionAsync(string connectionId)
@@ -83,7 +86,7 @@ namespace DrinkParty.Features
             await _playerService.RemoveSessionAsync(connectionId);
 
             if (player.IsAdmin && !player.Sessions.Any())
-                await _roomService.AssingPlayerAdminAsync(room.Code);
+                await _roomService.AssingPlayerAdminAsync(room.Id);
         }
     }
 }

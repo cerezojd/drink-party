@@ -22,7 +22,7 @@ namespace DrinkParty.Jwt
             _settings = settings.Value;
         }
 
-        public string GenerateJwtToken(string roomCode, string playerId, string playerName)
+        public string GenerateJwtToken(string roomId, string playerId, string playerName)
         {
             var claims = new List<Claim>
             {
@@ -33,7 +33,7 @@ namespace DrinkParty.Jwt
                 new Claim(JwtRegisteredClaimNames.GivenName, playerName),
                 new Claim(JwtRegisteredClaimNames.UniqueName, playerName),
                 new Claim(ClaimNames.PlayerNameClaimName, playerName),
-                new Claim(ClaimNames.RoomCodeClaimName, roomCode)
+                new Claim(ClaimNames.RoomCodeClaimName, roomId)
             };
 
 

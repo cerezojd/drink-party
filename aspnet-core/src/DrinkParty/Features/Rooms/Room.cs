@@ -6,7 +6,6 @@ namespace DrinkParty.Features.Rooms
 {
     public class Room : Entity<Guid>
     {
-        public Guid Code { get; set; }
         public bool GameStarted { get; set; }
         public int MaxPlayer { get; set; } = 10;
 

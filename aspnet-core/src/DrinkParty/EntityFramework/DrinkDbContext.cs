@@ -19,7 +19,6 @@ namespace DrinkParty.EntityFramework
             mb.Entity<Room>(c =>
             {
                 c.HasKey(r => r.Id);
-                c.HasIndex(r => r.Code);
                 c.HasMany(r => r.Players).WithOne(r => r.Room).HasForeignKey(x => x.RoomId);
             });
 

@@ -1,6 +1,4 @@
 ﻿using DrinkParty.Features;
-using DrinkParty.Features.Players;
-using DrinkParty.Features.Rooms;
 using DrinkParty.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -12,8 +10,6 @@ namespace DrinkParty.Hubs
     [Authorize]
     public class GameHub : Hub
     {
-        private readonly PlayerService _playerService;
-        private readonly RoomService _roomService;
         private readonly GameService _gameService;
 
         public GameHub(GameService gameService)
@@ -28,10 +24,10 @@ namespace DrinkParty.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            var roomCode = Guid.Parse(Context.User.FindFirst(ClaimNames.RoomCodeClaimName).Value);
+            var roomId = Guid.Parse(Context.User.FindFirst(ClaimNames.RoomCodeClaimName).Value);
             var playerId = Guid.Parse(Context.UserIdentifier);
 
-            await _gameService.CreatePlayerSessionAsync(roomCode, playerId, Context.ConnectionId);
+            await _gameService.CreatePlayerSessionAsync(roomId, playerId, Context.ConnectionId);
             await base.OnConnectedAsync();
         }
 

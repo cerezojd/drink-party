@@ -22,7 +22,6 @@ namespace DrinkParty.Features.Rooms
         {
             var room = new Room
             {
-                Code = Guid.NewGuid(),
                 GameStarted = false,
             };
 
@@ -32,9 +31,9 @@ namespace DrinkParty.Features.Rooms
             return room;
         }
 
-        public async Task<Room> JoinAsyn(Guid roomCode, Player player)
+        public async Task<Room> JoinAsyn(Guid roomId, Player player)
         {
-            var room = await GetRoomByCodeAsync(roomCode);
+            var room = await GetRoomByCodeAsync(roomId);
             if (room is null)
                 throw new Exception("Room does not exist");
 
@@ -54,9 +53,9 @@ namespace DrinkParty.Features.Rooms
             return room;
         }
 
-        public async Task AssingPlayerAdminAsync(Guid roomCode)
+        public async Task AssingPlayerAdminAsync(Guid roomId)
         {
-            var room = await _dbSet.Include(r => r.Players).ThenInclude(p => p.Sessions).FirstOrDefaultAsync(r => r.Code == roomCode);
+            var room = await _dbSet.Include(r => r.Players).ThenInclude(p => p.Sessions).FirstOrDefaultAsync(r => r.Id == roomId);
 
             var lastAdmin = room.Players.FirstOrDefault(p => p.IsAdmin);
             var newAdmin = room.Players.Where(p => p.Sessions.Any()).FirstOrDefault();
@@ -70,9 +69,9 @@ namespace DrinkParty.Features.Rooms
             }
         }
 
-        public async Task<Room> GetRoomByCodeAsync(Guid roomCode)
+        public async Task<Room> GetRoomByCodeAsync(Guid roomId)
         {
-            return await _dbSet.Include(r => r.Players).FirstOrDefaultAsync(r => r.Code == roomCode);
+            return await _dbSet.Include(r => r.Players).FirstOrDefaultAsync(r => r.Id == roomId);
         }
     }
 }
