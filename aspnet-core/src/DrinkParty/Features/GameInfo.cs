@@ -1,4 +1,6 @@
-﻿namespace DrinkParty.Features
+﻿using DrinkParty.Features.Players;
+
+namespace DrinkParty.Features
 {
     public class GameInfo
     {

@@ -1,15 +1,12 @@
 using DrinkParty.EntityFramework;
 using DrinkParty.Hubs;
 using DrinkParty.Jwt.Extensions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace DrinkParty
 {
@@ -40,10 +37,10 @@ namespace DrinkParty
                 });
             });
 
-            //services.AddDbContext<DrinkDbContext>(opt =>
-            //{
-            //    opt.UseSqlServer(Configuration.GetConnectionString("DrinkContext"));
-            //});
+            services.AddDbContext<DrinkDbContext>(opt =>
+            {
+                opt.UseSqlite(Configuration.GetConnectionString("DrinkContext"));
+            });
 
             services.ConfigureAppServices();
            
@@ -67,11 +64,6 @@ namespace DrinkParty
             app.UseRouting();
             app.UseCors("CorsTest");
 
-            //app.UseAuthorization();
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapHub<RoomHub>("/roomhub");
-            //});
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -79,7 +71,6 @@ namespace DrinkParty
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                //endpoints.MapHub<RoomHub>("/roomhub");
                 endpoints.MapHub<GameHub>("/gamehub");
 
             });

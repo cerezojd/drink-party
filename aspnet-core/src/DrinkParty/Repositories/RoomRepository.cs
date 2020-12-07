@@ -1,12 +1,4 @@
-﻿using DrinkParty.Entities;
-using DrinkParty.EntityFramework;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace DrinkParty.Repositories
+﻿namespace DrinkParty.Repositories
 {
     public class RoomRepository
     {
