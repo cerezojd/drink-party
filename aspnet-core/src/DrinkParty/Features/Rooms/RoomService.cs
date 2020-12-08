@@ -63,5 +63,16 @@ namespace DrinkParty.Features.Rooms
 
             return await queryable.FirstOrDefaultAsync(r => r.Id == roomId);
         }
+
+        public async Task ChangeGameModeAsync(Guid roomId, GameModeType mode)
+        {
+            var room = await GetByIdAsync(roomId, true);
+            if (room is null)
+                throw new Exception("Room does not exist");
+
+
+            room.GameMode = mode;
+            await _context.SaveChangesAsync();
+        }
     }
 }

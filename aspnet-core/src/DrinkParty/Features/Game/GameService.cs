@@ -19,7 +19,9 @@ namespace DrinkParty.Features
         private readonly PlayerService _playerService;
         private readonly JwtTokenGenerator _jwtTokenGenerator;
         private readonly TransactionService _transactionService;
-        private readonly IHttpContextAccessor _accessor;
+
+        public Guid CurrentRoomId { get; }
+        public Guid CurrentPlayerId { get; }
 
         public GameService(RoomService roomService, PlayerService playerService, JwtTokenGenerator jwtTokenGenerator, TransactionService transactionService, IHttpContextAccessor accessor)
         {
@@ -27,7 +29,8 @@ namespace DrinkParty.Features
             _playerService = playerService;
             _jwtTokenGenerator = jwtTokenGenerator;
             _transactionService = transactionService;
-            _accessor = accessor;
+            CurrentPlayerId = accessor.HttpContext.User.Claims.Any() ? Guid.Parse(accessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier).Value) : Guid.Empty;
+            CurrentRoomId = accessor.HttpContext.User.Claims.Any() ? Guid.Parse(accessor.HttpContext?.User?.FindFirst(ClaimNames.RoomCodeClaimName).Value) : Guid.Empty;
         }
 
         public async Task<string> CreateGameAsync(string playerName)
@@ -62,11 +65,11 @@ namespace DrinkParty.Features
 
         public async Task CreatePlayerSessionAsync(string connectionId)
         {
-            var room = await _roomService.GetByIdAsync(GetCurrentRoomId(), true);
+            var room = await _roomService.GetByIdAsync(CurrentRoomId, true);
             if (room is null)
                 throw new Exception("Invalid room");
 
-            var player = room.Players.FirstOrDefault(p => p.Id == GetCurrentPlayerId());
+            var player = room.Players.FirstOrDefault(p => p.Id == CurrentPlayerId);
             if (player is null)
                 throw new Exception("Player does not exist");
 
@@ -80,22 +83,28 @@ namespace DrinkParty.Features
 
         public async Task RemovePlayerSessionAsync(string connectionId)
         {
-            var playerId = GetCurrentPlayerId();
-            var roomId = GetCurrentRoomId();
-
-            var player = await _playerService.GetByIdAsync(playerId, true, true);
+            var player = await _playerService.GetByIdAsync(CurrentPlayerId, true, true);
             if (!player.Sessions.Any(s => s.ConnectionId == connectionId))
                 throw new Exception("Session does not exist");
 
             await _playerService.RemoveSessionAsync(connectionId);
 
             if (player.IsAdmin && !player.Sessions.Any())
-                await _playerService.AssingPlayerAdminAsync(roomId);
+                await _playerService.AssingPlayerAdminAsync(CurrentRoomId);
+        }
+
+        public async Task SetGameMode(GameModeType gameMode)
+        {
+            var adminPlayer = await _playerService.GetAdminByRoomId(CurrentRoomId);
+            if (adminPlayer.Id != CurrentPlayerId)
+                throw new Exception("You cannot do this action");
+
+            await _roomService.ChangeGameModeAsync(CurrentRoomId, gameMode);
         }
 
         public async Task<IEnumerable<PlayerOutput>> GetRoomPlayers()
         {
-            var players = await _playerService.GetWithActiveSessionsByRoomIdAsync(GetCurrentRoomId());
+            var players = await _playerService.GetWithActiveSessionsByRoomIdAsync(CurrentRoomId);
             var result = players.Select(p => new PlayerOutput
             {
                 Id = p.Id,
@@ -106,8 +115,20 @@ namespace DrinkParty.Features
             return result;
         }
 
-        public Guid GetCurrentRoomId() => Guid.Parse(_accessor.HttpContext.User.FindFirst(ClaimNames.RoomCodeClaimName).Value);
+        public async Task<IEnumerable<string>> PlayerConnectionIdsAsync()
+        {
+            return (await _playerService.GetSessionsAsync(CurrentPlayerId)).Select(s => s.ConnectionId).ToArray();
+        }
 
-        public Guid GetCurrentPlayerId() => Guid.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+        public async Task<GameInfoOutput> GetGameInfo()
+        {
+            var room = await _roomService.GetByIdAsync(CurrentRoomId, false, false);
+            return new GameInfoOutput
+            {
+                GameMode = room.GameMode,
+                Started = room.GameStarted
+            };
+        }
     }
 }

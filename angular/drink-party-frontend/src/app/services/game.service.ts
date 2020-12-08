@@ -55,7 +55,7 @@ export class GameService {
     return localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
   }
 
-  getCurrentId() {
+  getCurrentId(): string {
     return this.decodeJwt(this.getStoredToken())[PLAYER_ID_CLAIM_NAME];
   }
 
@@ -64,7 +64,7 @@ export class GameService {
     this.currentPlayer.next(player);
   }
 
-  private decodeJwt(jwt: string): string {
+  private decodeJwt(jwt: string) {
     return JSON.parse(atob(jwt.split('.')[1]));
   }
 }

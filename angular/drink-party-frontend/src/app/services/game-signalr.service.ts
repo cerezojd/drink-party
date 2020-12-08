@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@aspnet/signalr';
 import { Observable } from 'rxjs';
+import { GameInfo, GameModeType } from '../models/main';
 import { PlayerOutput } from '../pages/room/room.component';
 
 @Injectable({ providedIn: 'root' })
@@ -35,16 +36,12 @@ export class GameSignalRService {
     return this.on('Players');
   }
 
-  createRoom(username: string): Observable<string> {
-    return this.invoke('CreateRoom', username);
-  }
-
-  getGameInfo(): Observable<any> {
+  getGameInfo(): Observable<GameInfo> {
     return this.on('GameInfo');
   }
 
-  joinRoom(username: string, roomCode: string): Observable<void> {
-    return this.invoke('JoinRoom', username, roomCode);
+  chooseGameMode(gameMode: GameModeType): Observable<void> {
+    return this.invoke('ChooseGameMode', gameMode);
   }
 
   private on<T>(methodName: string): Observable<T> {

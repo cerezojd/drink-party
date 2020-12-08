@@ -11,5 +11,22 @@
     <div class="col-12" *ngFor="let player of players">
       {{player.name}}
     </div>
+
   </div>
+  <button *ngIf="me?.isAdmin && gameMode !== modes.None" class="btn btn-info" (click)="onSelectMode(modes.None)">Exit mode</button>
+  <ng-container *ngIf="me">
+  <div class="row" *ngIf="gameMode === modes.None">
+    <h4>Game modes</h4>
+    <div class="col">
+    <button [disabled]="!me.isAdmin" class="btn btn-info" (click)="onSelectMode(modes.Coin)">Coin</button>
+  </div>
+  </div>
+
+  <div class="row" *ngIf="gameMode !== modes.None">
+    <div class="col">
+    <button [disabled]="!me.isAdmin" class="btn btn-success">Start game</button>
+  </div>
+  </div>
+</ng-container>
 </div>
+

@@ -16,8 +16,8 @@ export class RedirectComponent implements OnInit {
       return;
     }
 
-    this.gameService.setCurrentSession(token);
-    const player = this.gameService.player;
-    this.router.navigate(['/room', player.roomCode]);
+    // this.gameService.setCurrentSession(token);
+    // const player = this.gameService.player;
+    // this.router.navigate(['/room', player.roomCode]);
   }
 }
