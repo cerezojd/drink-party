@@ -33,7 +33,7 @@ namespace DrinkParty.Features.Rooms
 
         public async Task<Room> JoinAsyn(Guid roomId, Player player)
         {
-            var room = await GetRoomByCodeAsync(roomId);
+            var room = await GetByIdAsync(roomId, true);
             if (room is null)
                 throw new Exception("Room does not exist");
 
@@ -52,26 +52,16 @@ namespace DrinkParty.Features.Rooms
 
             return room;
         }
-
-        public async Task AssingPlayerAdminAsync(Guid roomId)
+ 
+        public async Task<Room> GetByIdAsync(Guid roomId, bool includePlayers, bool trancking = true)
         {
-            var room = await _dbSet.Include(r => r.Players).ThenInclude(p => p.Sessions).FirstOrDefaultAsync(r => r.Id == roomId);
+            var queryable = _dbSet.AsQueryable();
+            if (includePlayers)
+                queryable = queryable.Include(r => r.Players);
+            if (!trancking)
+                queryable = queryable.AsNoTracking();
 
-            var lastAdmin = room.Players.FirstOrDefault(p => p.IsAdmin);
-            var newAdmin = room.Players.Where(p => p.Sessions.Any()).FirstOrDefault();
-
-            if (!(lastAdmin is null) && !(newAdmin is null))
-            {
-                lastAdmin.IsAdmin = false;
-                newAdmin.IsAdmin = true;
-
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task<Room> GetRoomByCodeAsync(Guid roomId)
-        {
-            return await _dbSet.Include(r => r.Players).FirstOrDefaultAsync(r => r.Id == roomId);
+            return await queryable.FirstOrDefaultAsync(r => r.Id == roomId);
         }
     }
 }

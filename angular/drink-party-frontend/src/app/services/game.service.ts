@@ -8,6 +8,7 @@ import { StartGameOutput } from '../models/start-game-output';
 
 export const ROOM_CODE_CLAIM_NAME = 'http://bebere.com/claims/RoomCode';
 export const PLAYER_NAME_CLAIM_NAME = 'http://bebere.com/claims/PlayerName';
+export const PLAYER_ID_CLAIM_NAME = 'sub';
 export const LOCAL_STORAGE_TOKEN_KEY = 'token';
 
 @Injectable({ providedIn: 'root' })
@@ -52,6 +53,10 @@ export class GameService {
 
   getStoredToken() {
     return localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
+  }
+
+  getCurrentId() {
+    return this.decodeJwt(this.getStoredToken())[PLAYER_ID_CLAIM_NAME];
   }
 
   setCurrentPlayer(player: Player) {

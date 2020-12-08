@@ -36,14 +36,20 @@ namespace DrinkParty.Features.Players
             return player;
         }
 
-        public async Task<Player> GetByIdAsync(Guid playerId)
+        public async Task<Player> GetByIdAsync(Guid playerId, bool includeSessions, bool tracking = true)
         {
-            return await _playerDbSet.Include(p => p.Sessions).FirstOrDefaultAsync(p => p.Id == playerId);
+            var query = _playerDbSet.AsQueryable();
+            if (includeSessions)
+                query = query.Include(p => p.Sessions);
+            if (!tracking)
+                query = query.AsNoTracking();
+
+            return await query.FirstOrDefaultAsync(p => p.Id == playerId);
         }
 
         public async Task AddSessionAsync(Guid playerId, string connectionId)
         {
-            var player = await GetByIdAsync(playerId);
+            var player = await GetByIdAsync(playerId, true, false);
             if (player is null)
                 throw new Exception("Player does not exist");
 
@@ -56,7 +62,7 @@ namespace DrinkParty.Features.Players
                 PlayerId = playerId
             };
 
-            player.Sessions.Add(session);
+            await _playerSessionDbSet.AddAsync(session);
             await _context.SaveChangesAsync();
         }
 
@@ -72,26 +78,47 @@ namespace DrinkParty.Features.Players
 
         public async Task<IEnumerable<PlayerSession>> GetSessionsAsync(Guid playerId)
         {
-            var player = await GetByIdAsync(playerId);
+            var player = await GetByIdAsync(playerId, true, false);
             if (player is null)
                 throw new Exception("Player does not exist");
 
             return player.Sessions;
         }
 
-        public async Task<PlayerSession> GetSessionByConnectionIdAsync(string connectioId)
-        {
-            return await _playerSessionDbSet.Include(p => p.Player).ThenInclude(p => p.Room).FirstOrDefaultAsync(s => s.ConnectionId == connectioId);
-        }
-
         public async Task RemoveAsync(Guid id)
         {
-            var player = await GetByIdAsync(id);
+            var player = await GetByIdAsync(id, false, false);
             if (player is null)
                 throw new Exception("Player does not exist");
 
             _playerDbSet.Remove(player);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task AssingPlayerAdminAsync(Guid roomId)
+        {
+            var players = await _playerDbSet.Include(r => r.Sessions).Where(p => p.RoomId == roomId).ToArrayAsync();
+
+            var lastAdmin = players.FirstOrDefault(p => p.IsAdmin);
+            var newAdmin = players.Where(p => p.Sessions.Any()).FirstOrDefault();
+
+            if (!(lastAdmin is null) && !(newAdmin is null))
+            {
+                lastAdmin.IsAdmin = false;
+                newAdmin.IsAdmin = true;
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<IEnumerable<Player>> GetWithActiveSessionsByRoomIdAsync(Guid roomId)
+        {
+            return await _playerDbSet.Where(p => p.RoomId == roomId && p.Sessions.Any()).ToArrayAsync();
+        }
+
+        public async Task<Player> GetAdminByRoomId(Guid roomId)
+        {
+            return await _playerDbSet.Include(p => p.Sessions).FirstOrDefaultAsync(p => p.RoomId == roomId && p.IsAdmin);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using DrinkParty.Features;
-using DrinkParty.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -17,23 +16,27 @@ namespace DrinkParty.Hubs
             _gameService = gameService;
         }
 
-        private async Task NotifyRoomGameInfo(string groupName)
+        private async Task NotifyPlayers()
         {
-            await Clients.Group(groupName).SendAsync("GameInfo");
+            var roomId = _gameService.GetCurrentRoomId().ToString();
+            var roomPlayers = await _gameService.GetRoomPlayers();
+            await Clients.Group(roomId).SendAsync("Players", roomPlayers);
         }
 
         public override async Task OnConnectedAsync()
         {
-            var roomId = Guid.Parse(Context.User.FindFirst(ClaimNames.RoomCodeClaimName).Value);
-            var playerId = Guid.Parse(Context.UserIdentifier);
+            await _gameService.CreatePlayerSessionAsync(Context.ConnectionId);
+            await Groups.AddToGroupAsync(Context.ConnectionId, _gameService.GetCurrentRoomId().ToString());
+            await NotifyPlayers();
 
-            await _gameService.CreatePlayerSessionAsync(roomId, playerId, Context.ConnectionId);
             await base.OnConnectedAsync();
         }
 
         public async override Task OnDisconnectedAsync(Exception exception)
         {
             await _gameService.RemovePlayerSessionAsync(Context.ConnectionId);
+            await NotifyPlayers();
+
             await base.OnDisconnectedAsync(exception);
         }
     }

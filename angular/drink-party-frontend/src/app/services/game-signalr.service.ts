@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@aspnet/signalr';
 import { Observable } from 'rxjs';
+import { PlayerOutput } from '../pages/room/room.component';
 
 @Injectable({ providedIn: 'root' })
 export class GameSignalRService {
@@ -28,6 +29,10 @@ export class GameSignalRService {
         console.log('Connection started');
       })
       .catch((err) => console.log('Error while starting connection: ', err));
+  }
+
+  getPlayers(): Observable<PlayerOutput[]> {
+    return this.on('Players');
   }
 
   createRoom(username: string): Observable<string> {

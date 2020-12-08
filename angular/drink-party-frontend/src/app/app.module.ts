@@ -9,6 +9,7 @@ import { CreateFormComponent } from './pages/main/create-form/create-form.compon
 import { JoinFormComponent } from './pages/main/join-form/join-form.component';
 import { MainComponent } from './pages/main/main.component';
 import { RoomComponent } from './pages/room/room.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { RoomComponent } from './pages/room/room.component';
   imports: [
     BrowserModule,
     HttpClientModule,
+    CommonModule,
     AppRoutingModule,
     ReactiveFormsModule,
   ],

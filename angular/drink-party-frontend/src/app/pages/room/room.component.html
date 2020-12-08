@@ -1,1 +1,15 @@
-<p>{{player?.playerName}}</p>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+        <div *ngIf="me">
+            <h5>Welcome, {{me.name}}</h5>
+        </div>
+    </div>
+  </div>
+  <div class="row" *ngIf="players?.length">
+    <h5>Players</h5>
+    <div class="col-12" *ngFor="let player of players">
+      {{player.name}}
+    </div>
+  </div>
+</div>
