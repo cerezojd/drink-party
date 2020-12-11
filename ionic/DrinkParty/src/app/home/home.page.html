@@ -1,0 +1,47 @@
+ <ion-header></ion-header> 
+
+ 
+ <ion-content id="content-home">
+   <!-- <div id="background"> -->
+  <ion-grid fixed >
+    <ion-row class="center-row">
+      <ion-col>
+        <ion-row class="center-row">
+
+          <ion-row>
+            <ion-segment  mode="ios">
+              <ion-segment-button value="create">
+                <label>Create</label>
+              </ion-segment-button>
+              
+              <ion-segment-button value="join">
+                <label>Join</label>
+              </ion-segment-button>
+              <!-- <ion-chip color="primary">
+                <ion-label>
+                  bt13
+                </ion-label>
+              </ion-chip>
+              <ion-chip color="secondary">br2</ion-chip> -->
+            </ion-segment>
+          </ion-row>
+          <ion-row>
+            <ion-item detail="false" lines="undefined" id="item-input">
+              <ion-input type="text" size="25"  maxlength="25" placeholder="Enter name" ></ion-input>
+            </ion-item>
+          </ion-row>
+          <ion-row>
+            <ion-button shape="round" strong expand="block" id="create-room-button">
+              Create room <!-- &nbsp;&nbsp; 
+              <ion-icon name="enter-outline"></ion-icon> -->
+            </ion-button>
+          </ion-row>
+
+        </ion-row>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+<!-- </div> -->
+</ion-content>
+
+<ion-footer></ion-footer>
